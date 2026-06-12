@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { ShipmentsModule } from './shipments/shipments.module';
+import { CompaniesModule } from './companies/companies.module';
+import { DriversModule } from './drivers/drivers.module';
 import { User } from './users/user.entity';
 import { Company } from './companies/company.entity';
 import { Driver } from './drivers/driver.entity';
@@ -30,6 +32,8 @@ import { Rating } from './ratings/rating.entity';
     }),
     AuthModule,
     ShipmentsModule,
+    CompaniesModule,
+    DriversModule,
   ],
   controllers: [AppController],
 })
