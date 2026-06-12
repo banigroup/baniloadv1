@@ -1,1 +1,86 @@
+'use client';
+import { useEffect, useState } from 'react';
 
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const u = localStorage.getItem('user');
+    if (!u) { window.location.href = '/login'; return; }
+    const user = JSON.parse(u);
+    if (user.role !== 'admin') { window.location.href = '/login'; return; }
+    const token = localStorage.getItem('token');
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(r => r.json()).then(data => { setStats(data); setLoading(false); });
+  }, []);
+
+  if (loading) return <div style={{ minHeight: '100vh', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>Yükleniyor...</div>;
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#0f172a' }}>
+      <header style={{ background: '#1e293b', borderBottom: '1px solid #334155', padding: '15px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '35px', height: '35px', background: '#f97316', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>BL</div>
+          <span style={{ color: 'white', fontWeight: '600' }}>Admin Paneli</span>
+        </div>
+        <div style={{ display: 'flex', gap: '15px' }}>
+          <a href="/admin/firmalar" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px' }}>Firmalar</a>
+          <a href="/admin/kamyoncular" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px' }}>Kamyoncular</a>
+          <a href="/admin/sikayet" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px' }}>Şikayetler</a>
+          <button onClick={() => { localStorage.clear(); window.location.href = '/login'; }} style={{ padding: '8px 15px', background: '#334155', border: 'none', borderRadius: '8px', color: '#94a3b8', cursor: 'pointer', fontSize: '14px' }}>Çıkış</button>
+        </div>
+      </header>
+      <main style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
+        <h1 style={{ color: 'white', marginBottom: '25px' }}>Dashboard</h1>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+          {[
+            { label: 'Toplam Firma', value: stats?.totalCompanies, icon: '🏢', color: '#2563eb' },
+            { label: 'Toplam Kamyoncu', value: stats?.totalDrivers, icon: '🚛', color: '#16a34a' },
+            { label: 'Aktif İlan', value: stats?.activeShipments, icon: '📋', color: '#f97316' },
+            { label: 'Tamamlanan', value: stats?.completedShipments, icon: '✅', color: '#6b7280' },
+          ].map(s => (
+            <div key={s.label} style={{ background: '#1e293b', padding: '25px', borderRadius: '12px', border: `1px solid ${s.color}30` }}>
+              <div style={{ fontSize: '30px', marginBottom: '10px' }}>{s.icon}</div>
+              <div style={{ color: s.color, fontSize: '32px', fontWeight: '700' }}>{s.value || 0}</div>
+              <div style={{ color: '#94a3b8', fontSize: '14px', marginTop: '5px' }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div style={{ background: '#1e293b', padding: '25px', borderRadius: '12px' }}>
+            <h3 style={{ color: 'white', marginBottom: '15px' }}>⏳ Bekleyen Onaylar</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <span style={{ color: '#94a3b8' }}>Firma Onayı Bekleyen</span>
+              <span style={{ color: '#f97316', fontWeight: '600' }}>{stats?.pendingCompanies || 0}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <span style={{ color: '#94a3b8' }}>Kamyoncu Onayı Bekleyen</span>
+              <span style={{ color: '#f97316', fontWeight: '600' }}>{stats?.pendingDrivers || 0}</span>
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <a href="/admin/firmalar?status=pending" style={{ flex: 1, padding: '10px', background: '#2563eb', color: 'white', borderRadius: '8px', textDecoration: 'none', textAlign: 'center', fontSize: '14px' }}>Firmaları Onayla</a>
+              <a href="/admin/kamyoncular?status=pending" style={{ flex: 1, padding: '10px', background: '#16a34a', color: 'white', borderRadius: '8px', textDecoration: 'none', textAlign: 'center', fontSize: '14px' }}>Kamyoncuları Onayla</a>
+            </div>
+          </div>
+          <div style={{ background: '#1e293b', padding: '25px', borderRadius: '12px' }}>
+            <h3 style={{ color: 'white', marginBottom: '15px' }}>📊 Genel İstatistikler</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <span style={{ color: '#94a3b8' }}>Toplam Kullanıcı</span>
+              <span style={{ color: 'white', fontWeight: '600' }}>{stats?.totalUsers || 0}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <span style={{ color: '#94a3b8' }}>Toplam İlan</span>
+              <span style={{ color: 'white', fontWeight: '600' }}>{stats?.totalShipments || 0}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: '#94a3b8' }}>Açık Şikayet</span>
+              <span style={{ color: '#dc2626', fontWeight: '600' }}>{stats?.totalComplaints || 0}</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
