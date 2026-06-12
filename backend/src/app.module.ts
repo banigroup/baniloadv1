@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
+import { ShipmentsModule } from './shipments/shipments.module';
 import { User } from './users/user.entity';
 import { Company } from './companies/company.entity';
 import { Driver } from './drivers/driver.entity';
@@ -28,6 +29,7 @@ import { Rating } from './ratings/rating.entity';
       }),
     }),
     AuthModule,
+    ShipmentsModule,
   ],
   controllers: [AppController],
 })
