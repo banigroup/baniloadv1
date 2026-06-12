@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { ShipmentsModule } from './shipments/shipments.module';
 import { CompaniesModule } from './companies/companies.module';
 import { DriversModule } from './drivers/drivers.module';
+import { AdminModule } from './admin/admin.module';
 import { User } from './users/user.entity';
 import { Company } from './companies/company.entity';
 import { Driver } from './drivers/driver.entity';
@@ -34,6 +35,7 @@ import { Rating } from './ratings/rating.entity';
     ShipmentsModule,
     CompaniesModule,
     DriversModule,
+    AdminModule,
   ],
   controllers: [AppController],
 })
